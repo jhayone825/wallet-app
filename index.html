@@ -3,135 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crypto Recovery - Jhayone Portfolio</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
-      color: #000;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .dark-mode {
-      background-color: #0d1117;
-      color: #fff;
-    }
-    header {
-      padding: 1rem;
-      text-align: center;
-      background: linear-gradient(to right, #141e30, #243b55);
-      color: white;
-    }
-    .toggle-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 10px;
-      background: #00b894;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      color: white;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      background: #eee;
-      padding: 1rem;
-    }
-    nav a {
-      text-decoration: none;
-      color: #000;
-    }
-    .dark-mode nav {
-      background: #1c1f26;
-    }
-    .hero {
-      padding: 2rem;
-      text-align: center;
-    }
-    .hero h1 {
-      font-size: 2.5rem;
-    }
-    .cta-button {
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      margin-top: 1rem;
-      background: #00cec9;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    footer {
-      text-align: center;
-      padding: 2rem;
-      background: #ccc;
-    }
-    .dark-mode footer {
-      background: #1e1e1e;
-    }
-    .section {
-      padding: 2rem;
-    }
-  </style>
+  <title>Crypto Recovery | Home</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <button class="toggle-btn" onclick="toggleMode()">Toggle Theme</button>
+<body class="dark">
   <header>
-    <h1>Crypto Recovery Services - Jhayone</h1>
-    <p>Helping you reclaim your lost digital assets.</p>
+    <nav>
+      <h1>CryptoRecoveryPro</h1>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button id="mode-toggle">Toggle Mode</button>
+    </nav>
   </header>
 
-  <nav>
-    <a href="#about">About</a>
-    <a href="#services">Services</a>
-    <a href="#faq">FAQ</a>
-    <a href="#contact">Contact</a>
-  </nav>
+  <section class="hero">
+    <h2>Recover Lost Crypto Funds</h2>
+    <p>We help victims of crypto scams trace and recover lost digital assets through smart tools and expert techniques.</p>
+    <a href="recover.html" class="cta-button">Start Recovery</a>
+  </section>
 
-  <div class="hero">
-    <h1>Lost Crypto? We Help Recover It.</h1>
-    <p>Trusted by individuals and organizations in the USA.</p>
-    <a href="recover.html"><button class="cta-button">Start Recovery</button></a>
-  </div>
-
-  <div class="section" id="about">
-    <h2>About Us</h2>
-    <p>We are experienced blockchain specialists and digital forensic analysts helping victims of crypto scams and loss. We’ve successfully recovered millions in crypto.</p>
-  </div>
-
-  <div class="section" id="services">
-    <h2>Our Services</h2>
+  <section class="features">
+    <h3>Why Choose Us</h3>
     <ul>
-      <li>Lost wallet recovery</li>
-      <li>Scam investigation and tracing</li>
-      <li>DeFi & smart contract fund recovery</li>
-      <li>Phishing and hack restoration</li>
+      <li>✅ Blockchain Tracing Experts</li>
+      <li>✅ 24/7 Client Support (USA/UK)</li>
+      <li>✅ Fast Recovery Steps</li>
+      <li>✅ No Hidden Charges</li>
     </ul>
-  </div>
-
-  <div class="section" id="faq">
-    <h2>FAQ</h2>
-    <p><strong>Q: Is recovery guaranteed?</strong> <br />A: We offer no upfront payment. You only pay if we recover your funds.</p>
-    <p><strong>Q: How long does recovery take?</strong><br />A: 3–10 business days, depending on the complexity.</p>
-  </div>
-
-  <div class="section" id="contact">
-    <h2>Contact Us</h2>
-    <p>Email: <a href="mailto:recovery@jhayonetech.com">recovery@jhayonetech.com</a></p>
-    <p>WhatsApp: <a href="https://wa.me/1234567890">+1 234 567 890</a></p>
-  </div>
+  </section>
 
   <footer>
-    <p>&copy; 2025 Crypto Recovery Portfolio | Built by Jhayone</p>
+    <p>&copy; 2025 CryptoRecoveryPro. All rights reserved.</p>
   </footer>
 
   <script>
-    function toggleMode() {
-      document.body.classList.toggle('dark-mode');
-    }
+    const toggleBtn = document.getElementById("mode-toggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      document.body.classList.toggle("light");
+    });
   </script>
 </body>
 </html>
