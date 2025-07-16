@@ -1,236 +1,129 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trust Wallet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faithed Store</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f7fc;
       margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    .wallet-container {
-      max-width: 420px;
-      margin: 20px auto;
+      font-family: 'Segoe UI', sans-serif;
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      padding: 20px;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
     }
-    .header {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #1e88e5;
+    header {
+      background: linear-gradient(to right, #1b5e20, #4caf50);
+      color: white;
+      padding: 1rem;
+      text-align: center;
     }
-    .warning {
-      color: #d32f2f;
-      background: #ffebee;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-    .balance {
-      font-size: 28px;
-      font-weight: bold;
-      margin: 20px 0;
-      color: #388e3c;
-    }
-    .address, .network, .token {
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
-    .buttons {
+    nav {
       display: flex;
-      justify-content: space-between;
-      margin: 20px 0;
+      justify-content: center;
+      gap: 2rem;
+      background: #f4f4f4;
+      padding: 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .container {
+      padding: 2rem;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    .product {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .product img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
     }
     .btn {
-      background: #1976d2;
-      color: white;
+      margin-top: 1rem;
+      background: #4caf50;
       border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 14px;
     }
-    .btn:hover {
-      background: #1565c0;
-    }
-    .transaction {
-      border-top: 1px solid #eee;
-      padding: 10px 0;
-    }
-    .transaction-title {
-      font-weight: bold;
-    }
-    .confirmed {
-      color: green;
-    }
-    .pending {
-      color: orange;
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #eee;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <div class="wallet-container">
-    <div class="header">Trust Wallet</div>
-    <div class="warning">⚠️ Wallet Compromised — Suspicious activity detected. ChainGuardian active.</div>
-    <div class="balance">$6,685.68</div>
+  <header>
+    <h1>Faithed Kitchen & Shoe Store</h1>
+  </header>
 
-    <div class="buttons">
-      <button class="btn" onclick="showPopup('Send')">Send</button>
-      <button class="btn" onclick="showPopup('Receive')">Receive</button>
-      <button class="btn" onclick="showPopup('Scan')">Scan</button>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#kitchen">Kitchen</a>
+    <a href="#shoes">Shoes</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <div class="container">
+    <h2 id="kitchen">Kitchen Appliances</h2>
+    <div class="products">
+      <div class="product">
+        <img src="https://via.placeholder.com/200x200.png?text=Blender" alt="Blender" />
+        <h3>Power Blender</h3>
+        <p>$45.00</p>
+        <button class="btn">Order Now</button>
+      </div>
+      <div class="product">
+        <img src="https://via.placeholder.com/200x200.png?text=Toaster" alt="Toaster" />
+        <h3>2-Slice Toaster</h3>
+        <p>$25.00</p>
+        <button class="btn">Order Now</button>
+      </div>
     </div>
 
-    <div class="address"><strong>Wallet:</strong> 0xfAbC09ba76d0004339179aa6bDFF7d0d3C9820Ff</div>
-    <div class="network"><strong>Network:</strong> Crypto One Chain</div>
-    <div class="token"><strong>Token:</strong> POL</div>
+    <h2 id="shoes">Shoes</h2>
+    <div class="products">
+      <div class="product">
+        <img src="https://via.placeholder.com/200x200.png?text=Sneakers" alt="Sneakers" />
+        <h3>Stylish Sneakers</h3>
+        <p>$60.00</p>
+        <button class="btn">Order Now</button>
+      </div>
+      <div class="product">
+        <img src="https://via.placeholder.com/200x200.png?text=Heels" alt="Heels" />
+        <h3>Elegant Heels</h3>
+        <p>$80.00</p>
+        <button class="btn">Order Now</button>
+      </div>
+    </div>
 
-    <h3>Transaction History</h3>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 6, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 7, 2025<br><span class="confirmed">+$6,685.00</span> ✅ Confirmed</div>
-    </div>
-<div class="transaction">
-      <div class="transaction-title">Transfer From</div>
-      <div>Jul 8, 2025<br><span class="pending">-$1,354.00</span> 🟡 Pending</div>
-    </div>
+    <h2 id="contact">Contact</h2>
+    <form>
+      <input type="text" placeholder="Your name" required />
+      <input type="email" placeholder="Your email" required />
+      <textarea placeholder="Your message"></textarea>
+      <br>
+      <button class="btn">Send Message</button>
+    </form>
   </div>
 
-  <!-- Popup Modal -->
-  <div id="popup" style="display:none; position:fixed; top:30%; left:10%; width:80%; background:white; border:2px solid #007bff; padding:20px; z-index:1000; box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 10px;">
-    <div id="popup-message" style="font-size:16px;"></div>
-    <br>
-    <button onclick="closePopup()" class="btn">OK</button>
-  </div>
-
-  <script>
-    function showPopup(feature) {
-      const message = `⚠️ ${feature} Locked: Please activate ChainGuardian recovery tools to unlock this feature.`;
-      document.getElementById('popup-message').innerText = message;
-      document.getElementById('popup').style.display = 'block';
-    }
-    function closePopup() {
-      document.getElementById('popup').style.display = 'none';
-    }
-  </script>
+  <footer>
+    &copy; 2025 Faithed Store. All rights reserved.
+  </footer>
 </body>
 </html>
