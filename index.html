@@ -3,121 +3,135 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Faithed Store</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Crypto Recovery - Jhayone Portfolio</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
     body {
-      background-color: #f9f9f9;
-      color: #333;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      color: #000;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #0d1117;
+      color: #fff;
     }
     header {
-      background-color: #2c3e50;
-      padding: 1rem 2rem;
-      color: white;
-      text-align: center;
-    }
-    header h1 {
-      font-size: 2rem;
-    }
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      padding: 2rem;
-    }
-    .product {
-      background-color: white;
       padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      transition: transform 0.3s;
-    }
-    .product:hover {
-      transform: translateY(-5px);
-    }
-    .product img {
-      width: 100%;
-      border-radius: 10px;
-      height: 200px;
-      object-fit: cover;
-    }
-    .product h2 {
-      font-size: 1.1rem;
-      margin: 0.5rem 0;
-    }
-    .product p {
-      color: #27ae60;
-      font-weight: bold;
-    }
-    .btn {
-      background-color: #27ae60;
+      text-align: center;
+      background: linear-gradient(to right, #141e30, #243b55);
       color: white;
-      padding: 0.5rem 1rem;
-      margin-top: 0.5rem;
+    }
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px;
+      background: #00b894;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      width: 100%;
+      color: white;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      background: #eee;
+      padding: 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: #000;
+    }
+    .dark-mode nav {
+      background: #1c1f26;
+    }
+    .hero {
+      padding: 2rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+    .cta-button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      margin-top: 1rem;
+      background: #00cec9;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
     }
     footer {
       text-align: center;
-      padding: 1rem;
-      background-color: #ecf0f1;
-      margin-top: 2rem;
+      padding: 2rem;
+      background: #ccc;
+    }
+    .dark-mode footer {
+      background: #1e1e1e;
+    }
+    .section {
+      padding: 2rem;
     }
   </style>
 </head>
 <body>
+  <button class="toggle-btn" onclick="toggleMode()">Toggle Theme</button>
   <header>
-    <h1>Faithed Kitchen & Fashion</h1>
-    <p>Your one-stop shop for appliances and shoes</p>
+    <h1>Crypto Recovery Services - Jhayone</h1>
+    <p>Helping you reclaim your lost digital assets.</p>
   </header>
 
-  <main class="products">
-    <div class="product">
-      <img src="https://images.unsplash.com/photo-1606813908677-950f6c8a7592?auto=format&fit=crop&w=800&q=80" alt="Blender">
-      <h2>Electric Blender</h2>
-      <p>$55</p>
-      <button class="btn">Add to Cart</button>
-    </div>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
+  </nav>
 
-    <div class="product">
-      <img src="https://images.unsplash.com/photo-1600180758890-ef9efef96c89?auto=format&fit=crop&w=800&q=80" alt="Kitchen Pot">
-      <h2>Non-stick Pot Set</h2>
-      <p>$75</p>
-      <button class="btn">Add to Cart</button>
-    </div>
+  <div class="hero">
+    <h1>Lost Crypto? We Help Recover It.</h1>
+    <p>Trusted by individuals and organizations in the USA.</p>
+    <a href="recover.html"><button class="cta-button">Start Recovery</button></a>
+  </div>
 
-    <div class="product">
-      <img src="https://images.unsplash.com/photo-1562184551-4c1c29c5b6e8?auto=format&fit=crop&w=800&q=80" alt="Sneakers">
-      <h2>White Sneakers</h2>
-      <p>$45</p>
-      <button class="btn">Add to Cart</button>
-    </div>
+  <div class="section" id="about">
+    <h2>About Us</h2>
+    <p>We are experienced blockchain specialists and digital forensic analysts helping victims of crypto scams and loss. We’ve successfully recovered millions in crypto.</p>
+  </div>
 
-    <div class="product">
-      <img src="https://images.unsplash.com/photo-1586015557300-23b51b6d6b39?auto=format&fit=crop&w=800&q=80" alt="Toaster">
-      <h2>4-Slice Toaster</h2>
-      <p>$40</p>
-      <button class="btn">Add to Cart</button>
-    </div>
+  <div class="section" id="services">
+    <h2>Our Services</h2>
+    <ul>
+      <li>Lost wallet recovery</li>
+      <li>Scam investigation and tracing</li>
+      <li>DeFi & smart contract fund recovery</li>
+      <li>Phishing and hack restoration</li>
+    </ul>
+  </div>
 
-    <div class="product">
-      <img src="https://images.unsplash.com/photo-1600181954561-1011e50df688?auto=format&fit=crop&w=800&q=80" alt="Red Heels">
-      <h2>Red Heels</h2>
-      <p>$60</p>
-      <button class="btn">Add to Cart</button>
-    </div>
-  </main>
+  <div class="section" id="faq">
+    <h2>FAQ</h2>
+    <p><strong>Q: Is recovery guaranteed?</strong> <br />A: We offer no upfront payment. You only pay if we recover your funds.</p>
+    <p><strong>Q: How long does recovery take?</strong><br />A: 3–10 business days, depending on the complexity.</p>
+  </div>
+
+  <div class="section" id="contact">
+    <h2>Contact Us</h2>
+    <p>Email: <a href="mailto:recovery@jhayonetech.com">recovery@jhayonetech.com</a></p>
+    <p>WhatsApp: <a href="https://wa.me/1234567890">+1 234 567 890</a></p>
+  </div>
 
   <footer>
-    &copy; 2025 Faithed Store. All rights reserved.
+    <p>&copy; 2025 Crypto Recovery Portfolio | Built by Jhayone</p>
   </footer>
+
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+  </script>
 </body>
 </html>
