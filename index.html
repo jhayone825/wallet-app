@@ -1,160 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Tap Game</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TapTap Gold</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
+      font-family: 'Rubik', sans-serif;
     }
-
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: linear-gradient(to bottom right, #1d1f27, #121318);
+      background: linear-gradient(to top right, #111, #333);
       color: white;
-      overflow: hidden;
-      touch-action: manipulation;
+      text-align: center;
+      overflow-x: hidden;
     }
-
     h1 {
-      margin-bottom: 10px;
-      font-size: 2.2em;
-      text-align: center;
+      margin-top: 20px;
     }
-
     #coin-count {
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      text-align: center;
+      font-size: 2.5em;
+      margin: 10px 0;
+      color: gold;
     }
-
     #tap-button {
-      width: 120px;
-      height: 120px;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
       box-shadow: 0 10px 25px rgba(255, 215, 0, 0.5), inset 0 2px 8px rgba(255,255,255,0.2);
       border: none;
-      font-size: 1.2em;
+      font-size: 1.4em;
       font-weight: bold;
       color: black;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
-      animation: pulse 2.5s infinite;
+      animation: pulse 3s infinite;
+      margin-top: 30px;
     }
-
     #tap-button:active {
       transform: scale(0.93);
       box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4), inset 0 1px 4px rgba(255,255,255,0.1);
     }
-
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.07); }
+      50% { transform: scale(1.05); }
     }
-
+    #leaderboard-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #444;
+      color: gold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #leaderboard-container {
+      margin-top: 20px;
+    }
     .spark {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
+      position: absolute;
+      width: 8px;
+      height: 8px;
       background: gold;
-      position: absolute;
-      pointer-events: none;
-      animation: explode 0.6s ease-out forwards;
-      z-index: 10;
+      border-radius: 50%;
+      animation: explode 0.4s linear forwards;
     }
-
     @keyframes explode {
-      0% { opacity: 1; transform: translate(0, 0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(0); }
-    }
-
-    .bonus {
-      position: absolute;
-      top: 10%;
-      right: 10%;
-      padding: 8px 14px;
-      background: #00c853;
-      border-radius: 20px;
-      font-weight: bold;
-      animation: fadeInOut 3s ease-in-out;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; }
+      to {
+        transform: translate(var(--x), var(--y)) scale(0);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>💰 Tap to Earn!</h1>
-  <div id="coin-count">Coins: 0</div>
+  <h1>💰 TapTap Gold</h1>
+  <div id="coin-count">0</div>
   <button id="tap-button">TAP</button>
+  <div id="leaderboard-container"></div>
+  <button id="leaderboard-btn">🥇 Leaderboard</button>
 
   <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const userId = tg.initDataUnsafe?.user?.id || 'guest_' + Math.floor(Math.random() * 10000);
+    const username = tg.initDataUnsafe?.user?.username || "Guest";
+    
     let coins = 0;
-    const coinCount = document.getElementById("coin-count");
-    const tapButton = document.getElementById("tap-button");
+    const coinDisplay = document.getElementById("coin-count");
+    const button = document.getElementById("tap-button");
+    const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f29a1ffbb.mp3?filename=coin-c-193876.mp3");
 
-    function updateCount() {
-      coinCount.textContent = `Coins: ${coins}`;
-    }
-
-    function createSpark(x, y) {
-      const spark = document.createElement("div");
-      spark.className = "spark";
-      const angle = Math.random() * 2 * Math.PI;
-      const radius = 40 + Math.random() * 30;
-      spark.style.setProperty('--x', `${Math.cos(angle) * radius}px`);
-      spark.style.setProperty('--y', `${Math.sin(angle) * radius}px`);
-      spark.style.left = `${x}px`;
-      spark.style.top = `${y}px`;
-      document.body.appendChild(spark);
-      setTimeout(() => spark.remove(), 600);
-    }
-
-    function showBonus(message) {
-      const bonus = document.createElement("div");
-      bonus.className = "bonus";
-      bonus.textContent = message;
-      document.body.appendChild(bonus);
-      setTimeout(() => bonus.remove(), 3000);
-    }
-
-    tapButton.addEventListener("click", (e) => {
-      coins++;
-      updateCount();
-
-      const rect = tapButton.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      for (let i = 0; i < 6; i++) createSpark(centerX, centerY);
-
-      if (navigator.vibrate) navigator.vibrate(50);
-
-      const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_1bb8e33bd2.mp3?filename=click-124467.mp3");
-      audio.volume = 0.2;
-      audio.play();
-
-      // 🎁 Bonus every 50 coins
-      if (coins % 50 === 0) {
-        coins += 5;
-        updateCount();
-        showBonus("+5 Bonus Coins! 🎉");
+    function explode(x, y) {
+      for (let i = 0; i < 10; i++) {
+        const spark = document.createElement("div");
+        spark.className = "spark";
+        spark.style.left = `${x}px`;
+        spark.style.top = `${y}px`;
+        spark.style.setProperty('--x', `${Math.random() * 100 - 50}px`);
+        spark.style.setProperty('--y', `${Math.random() * 100 - 50}px`);
+        document.body.appendChild(spark);
+        setTimeout(() => spark.remove(), 400);
       }
+    }
+
+    button.addEventListener("click", (e) => {
+      coins++;
+      coinDisplay.textContent = coins;
+      audio.currentTime = 0;
+      audio.play();
+      navigator.vibrate?.(50);
+      const rect = button.getBoundingClientRect();
+      explode(rect.left + rect.width/2, rect.top + rect.height/2);
+
+      // Bonus every 50 taps
+      if (coins % 50 === 0) alert("🎉 Bonus coins!");
+
+      // Optionally send to backend:
+      // fetch("https://your-backend.com/update", { method: "POST", body: JSON.stringify({ userId, coins }) });
     });
+
+    // Leaderboard
+    document.getElementById("leaderboard-btn").onclick = async () => {
+      const res = await fetch("https://your-backend.com/leaderboard");
+      const data = await res.json();
+      const html = data.map((p, i) => `<p>#${i + 1} ${p.username}: ${p.coins} 🪙</p>`).join("");
+      document.getElementById("leaderboard-container").innerHTML = html;
+    };
+
+    // Referrals
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get('ref');
+    if (refId && refId !== userId) {
+      fetch(`https://your-backend.com/referral?user_id=${refId}`);
+    }
   </script>
 </body>
 </html>
