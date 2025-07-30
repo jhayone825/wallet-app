@@ -31,7 +31,7 @@
       height: 160px;
       border-radius: 50%;
       border: 6px solid gold;
-      background-image: url('https://i.ibb.co/QKfK94W/tom-and-jerry-coin.jpg');
+      background-image: url('https://i.ibb.co/YhQpXbg/default-coin.png');
       background-size: cover;
       background-position: center;
       box-shadow: 0 0 20px gold;
@@ -87,8 +87,8 @@
   <div id="tapBtn"></div>
 
   <div class="btns">
-    <button onclick="alert('Leaderboard coming soon')">🥇 Leaderboard</button>
-    <button onclick="alert('Referrals coming soon')">👥 Referrals</button>
+    <button onclick="showLeaderboard()">🥇 Leaderboard</button>
+    <button onclick="showReferral()">👥 Referrals</button>
     <button onclick="activatePowerUp()">⚡ x2 Power-Up</button>
   </div>
 
@@ -98,10 +98,15 @@
     let score = 0;
     let level = 1;
     let multiplier = 1;
+    let username = "You"; // For now, local only
     const scoreDisplay = document.getElementById("score");
     const levelDisplay = document.getElementById("level");
     const tapBtn = document.getElementById("tapBtn");
     const tapSound = document.getElementById("tapSound");
+
+    const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    const leaderboard = JSON.parse(localStorage.getItem("tap_leaderboard")) || [];
 
     function updateDisplay() {
       scoreDisplay.innerText = `Coins: ${score}`;
@@ -122,10 +127,8 @@
       updateDisplay();
       tapSound.play();
 
-      // Vibration
       if ("vibrate" in navigator) navigator.vibrate(100);
 
-      // spark effect
       const spark = document.createElement("div");
       spark.className = "spark";
       spark.style.left = (tapBtn.offsetLeft + 80) + "px";
@@ -143,6 +146,25 @@
         alert("⏳ Power-Up Ended!");
       }, 10000);
     }
+
+    function showReferral() {
+      alert(`👥 Your Referral Code: ${referralCode}`);
+    }
+
+    function showLeaderboard() {
+      leaderboard.push({ name: username, score });
+      leaderboard.sort((a, b) => b.score - a.score);
+      const top = leaderboard.slice(0, 5);
+      localStorage.setItem("tap_leaderboard", JSON.stringify(top));
+
+      let msg = "🏆 Top 5 Players:\n";
+      top.forEach((player, i) => {
+        msg += `${i + 1}. ${player.name} - ${player.score} coins\n`;
+      });
+      alert(msg);
+    }
+
+    updateDisplay();
   </script>
 </body>
 </html>
