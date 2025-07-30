@@ -1,145 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapTap Gold</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TapSwap Game</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Rubik', sans-serif;
-    }
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to top right, #111, #333);
-      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #1e1e2f, #111);
+      color: #fff;
       text-align: center;
-      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
     }
-    h1 {
+    
+    #coin-display {
+      font-size: 3rem;
       margin-top: 20px;
     }
-    #coin-count {
-      font-size: 2.5em;
-      margin: 10px 0;
-      color: gold;
-    }
-    #tap-button {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
-      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.5), inset 0 2px 8px rgba(255,255,255,0.2);
+
+    #tap-btn {
+      background: gold;
       border: none;
-      font-size: 1.4em;
+      border-radius: 50%;
+      width: 160px;
+      height: 160px;
+      font-size: 2rem;
       font-weight: bold;
-      color: black;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
-      animation: pulse 3s infinite;
-      margin-top: 30px;
+      box-shadow: 0 0 20px gold;
+      margin-top: 40px;
+      animation: pulse 2s infinite;
     }
-    #tap-button:active {
-      transform: scale(0.93);
-      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4), inset 0 1px 4px rgba(255,255,255,0.1);
+
+    #tap-btn:active {
+      transform: scale(0.95);
     }
+
     @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      0% { box-shadow: 0 0 5px gold; }
+      50% { box-shadow: 0 0 30px gold; }
+      100% { box-shadow: 0 0 5px gold; }
     }
-    #leaderboard-btn {
+
+    #power-up-btn {
       margin-top: 20px;
       padding: 10px 20px;
-      background: #444;
-      color: gold;
+      font-size: 1.2rem;
       border: none;
-      border-radius: 10px;
-      cursor: pointer;
+      background: #f39c12;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #f39c12;
     }
-    #leaderboard-container {
-      margin-top: 20px;
-    }
+
     .spark {
       position: absolute;
-      width: 8px;
-      height: 8px;
-      background: gold;
+      width: 10px;
+      height: 10px;
+      background: yellow;
       border-radius: 50%;
-      animation: explode 0.4s linear forwards;
+      opacity: 0.8;
+      animation: fly 0.6s ease-out forwards;
     }
-    @keyframes explode {
+
+    @keyframes fly {
       to {
-        transform: translate(var(--x), var(--y)) scale(0);
+        transform: translate(var(--x), var(--y));
         opacity: 0;
       }
+    }
+
+    #leaderboard-btn, #referral-btn {
+      margin: 10px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      background: #2980b9;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
-  <h1>💰 TapTap Gold</h1>
-  <div id="coin-count">0</div>
-  <button id="tap-button">TAP</button>
-  <div id="leaderboard-container"></div>
+  <h1>🔥 TapSwap Game</h1>
+  <div id="coin-display">0</div>
+  <button id="tap-btn">TAP</button>
+  <button id="power-up-btn">⚡ Power Boost</button>
+  <br>
   <button id="leaderboard-btn">🥇 Leaderboard</button>
+  <button id="referral-btn">👥 Referrals</button>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    const userId = tg.initDataUnsafe?.user?.id || 'guest_' + Math.floor(Math.random() * 10000);
-    const username = tg.initDataUnsafe?.user?.username || "Guest";
-    
-    let coins = 0;
-    const coinDisplay = document.getElementById("coin-count");
-    const button = document.getElementById("tap-button");
-    const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f29a1ffbb.mp3?filename=coin-c-193876.mp3");
+    let coinCount = 0;
+    let baseCoinsPerTap = 1;
+    let powerUpActive = false;
 
-    function explode(x, y) {
+    const coinDisplay = document.getElementById("coin-display");
+    const tapBtn = document.getElementById("tap-btn");
+
+    function animateCounter(element, newValue) {
+      const current = parseInt(element.innerText);
+      const increment = newValue > current ? 1 : -1;
+      const interval = setInterval(() => {
+        const updated = parseInt(element.innerText) + increment;
+        element.innerText = updated;
+        if (updated === newValue) clearInterval(interval);
+      }, 20);
+    }
+
+    function spawnSparks(x, y) {
       for (let i = 0; i < 10; i++) {
         const spark = document.createElement("div");
         spark.className = "spark";
-        spark.style.left = `${x}px`;
-        spark.style.top = `${y}px`;
-        spark.style.setProperty('--x', `${Math.random() * 100 - 50}px`);
-        spark.style.setProperty('--y', `${Math.random() * 100 - 50}px`);
+        spark.style.left = x + "px";
+        spark.style.top = y + "px";
+        spark.style.setProperty("--x", `${Math.random() * 200 - 100}px`);
+        spark.style.setProperty("--y", `${Math.random() * 200 - 100}px`);
         document.body.appendChild(spark);
-        setTimeout(() => spark.remove(), 400);
+        setTimeout(() => spark.remove(), 600);
       }
     }
 
-    button.addEventListener("click", (e) => {
-      coins++;
-      coinDisplay.textContent = coins;
-      audio.currentTime = 0;
-      audio.play();
-      navigator.vibrate?.(50);
-      const rect = button.getBoundingClientRect();
-      explode(rect.left + rect.width/2, rect.top + rect.height/2);
+    tapBtn.addEventListener("click", (e) => {
+      coinCount += baseCoinsPerTap;
+      animateCounter(coinDisplay, coinCount);
 
-      // Bonus every 50 taps
-      if (coins % 50 === 0) alert("🎉 Bonus coins!");
+      spawnSparks(e.clientX, e.clientY);
+      window.navigator.vibrate(50);
+      const tapSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_52d2e6df5b.mp3");
+      tapSound.play();
 
-      // Optionally send to backend:
-      // fetch("https://your-backend.com/update", { method: "POST", body: JSON.stringify({ userId, coins }) });
+      if (coinCount % 50 === 0) {
+        alert("🎉 Bonus! +10 Coins");
+        coinCount += 10;
+        animateCounter(coinDisplay, coinCount);
+      }
     });
 
-    // Leaderboard
-    document.getElementById("leaderboard-btn").onclick = async () => {
-      const res = await fetch("https://your-backend.com/leaderboard");
-      const data = await res.json();
-      const html = data.map((p, i) => `<p>#${i + 1} ${p.username}: ${p.coins} 🪙</p>`).join("");
-      document.getElementById("leaderboard-container").innerHTML = html;
-    };
+    document.getElementById("power-up-btn").addEventListener("click", () => {
+      if (powerUpActive) return;
+      powerUpActive = true;
+      baseCoinsPerTap = 2;
+      const btn = document.getElementById("power-up-btn");
+      btn.innerText = "🔥 Boost Active!";
+      btn.disabled = true;
 
-    // Referrals
-    const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get('ref');
-    if (refId && refId !== userId) {
-      fetch(`https://your-backend.com/referral?user_id=${refId}`);
-    }
+      setTimeout(() => {
+        powerUpActive = false;
+        baseCoinsPerTap = 1;
+        btn.innerText = "⚡ Power Boost";
+        btn.disabled = false;
+      }, 30000);
+    });
+
+    document.getElementById("leaderboard-btn").addEventListener("click", () => {
+      alert("🏆 Leaderboard coming soon!");
+    });
+
+    document.getElementById("referral-btn").addEventListener("click", () => {
+      alert("👥 Share your referral link!");
+    });
   </script>
 </body>
 </html>
