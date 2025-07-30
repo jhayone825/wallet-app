@@ -1,193 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>TapSwap Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tap Game</title>
   <style>
-    * {
-      font-family: 'Segoe UI', sans-serif;
+    body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      height: 100vh;
-      overflow: hidden;
-      background: linear-gradient(270deg, #1a1a1a, #0d0d0d);
-      background-size: 400% 400%;
-      animation: backgroundFlow 15s ease infinite;
-      color: white;
+      font-family: 'Segoe UI', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
-    }
-
-    @keyframes backgroundFlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to bottom right, #1d1f27, #121318);
+      color: white;
+      overflow: hidden;
     }
 
     h1 {
+      margin-bottom: 10px;
       font-size: 2em;
-      margin-top: 20px;
     }
 
-    #coin-display {
-      font-size: 1.4em;
-      margin: 10px 0 20px;
-      color: #ffcc00;
+    #coin-count {
+      font-size: 1.5em;
+      margin-bottom: 30px;
     }
 
     #tap-button {
-      background-color: gold;
-      color: black;
-      padding: 25px 50px;
-      font-size: 1.3em;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.5), inset 0 2px 8px rgba(255,255,255,0.2);
       border: none;
-      border-radius: 30px;
+      font-size: 1.4em;
+      font-weight: bold;
+      color: black;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.2s;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
-      z-index: 1;
+      animation: pulse 3s infinite;
     }
 
     #tap-button:active {
-      transform: scale(0.95);
+      transform: scale(0.93);
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4), inset 0 1px 4px rgba(255,255,255,0.1);
     }
 
-    .coin-pop {
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .spark {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: gold;
       position: absolute;
-      color: gold;
-      font-size: 18px;
-      animation: floatUp 1s ease-out forwards;
       pointer-events: none;
-      z-index: 999;
+      animation: explode 0.6s ease-out forwards;
     }
 
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-80px); }
-    }
-
-    .menu {
-      margin-top: 25px;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .menu button {
-      background: #333;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.9em;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-
-    .menu button:hover {
-      background: #444;
-    }
-
-    #leaderboard-box {
-      margin-top: 20px;
-      max-height: 200px;
-      overflow-y: auto;
-      width: 100%;
-      background: #222;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    .leaderboard-entry {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid #444;
-      padding: 5px 0;
+    @keyframes explode {
+      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(0); }
     }
   </style>
 </head>
 <body>
-  <h1>💰 TapSwap Game</h1>
-  <div id="coin-display">Coins: 0</div>
+  <h1>💰 Tap to Earn!</h1>
+  <div id="coin-count">Coins: 0</div>
   <button id="tap-button">TAP</button>
-
-  <div class="menu">
-    <button onclick="showLeaderboard()">🥇 Leaderboard</button>
-    <button onclick="claimReferral()">👥 Referrals</button>
-  </div>
-
-  <div id="leaderboard-box" style="display: none;"></div>
 
   <script>
     let coins = 0;
-    const user_id = "user_" + Math.floor(Math.random() * 100000);
-    const username = "Player" + user_id.slice(-4);
-
-    const coinDisplay = document.getElementById("coin-display");
+    const coinCount = document.getElementById("coin-count");
     const tapButton = document.getElementById("tap-button");
 
+    function updateCount() {
+      coinCount.textContent = `Coins: ${coins}`;
+    }
+
+    function createSpark(x, y) {
+      const spark = document.createElement("div");
+      spark.className = "spark";
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = 40 + Math.random() * 30;
+      spark.style.setProperty('--x', `${Math.cos(angle) * radius}px`);
+      spark.style.setProperty('--y', `${Math.sin(angle) * radius}px`);
+      spark.style.left = `${x}px`;
+      spark.style.top = `${y}px`;
+      document.body.appendChild(spark);
+      setTimeout(() => spark.remove(), 600);
+    }
+
     tapButton.addEventListener("click", (e) => {
-      coins += 1;
-      coinDisplay.textContent = "Coins: " + coins;
-      saveCoins();
-      showCoinPop(e);
-    });
+      coins++;
+      updateCount();
 
-    function saveCoins() {
-      fetch("http://localhost:3000/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id, username, coins })
-      });
-    }
-
-    function showLeaderboard() {
-      fetch("http://localhost:3000/leaderboard")
-        .then(res => res.json())
-        .then(data => {
-          const box = document.getElementById("leaderboard-box");
-          box.innerHTML = "<h3>Top Players</h3>";
-          data.forEach((entry, i) => {
-            box.innerHTML += `
-              <div class="leaderboard-entry">
-                <span>${i + 1}. ${entry.username}</span>
-                <span>${entry.coins} 🪙</span>
-              </div>`;
-          });
-          box.style.display = "block";
-        });
-    }
-
-    function claimReferral() {
-      fetch(`http://localhost:3000/referral?user_id=${user_id}`)
-        .then(res => res.json())
-        .then(() => {
-          coins += 10;
-          coinDisplay.textContent = "Coins: " + coins;
-          saveCoins();
-          alert("🎉 You received 10 coins from a referral!");
-        });
-    }
-
-    function showCoinPop(e) {
-      const coin = document.createElement("div");
-      coin.className = "coin-pop";
-      coin.textContent = "+1";
-      document.body.appendChild(coin);
+      // 💥 Particle animation
       const rect = tapButton.getBoundingClientRect();
-      coin.style.left = rect.left + rect.width / 2 + "px";
-      coin.style.top = rect.top - 10 + "px";
-      setTimeout(() => coin.remove(), 1000);
-    }
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      for (let i = 0; i < 6; i++) createSpark(centerX, centerY);
+
+      // 📳 Vibrate on mobile
+      if (navigator.vibrate) navigator.vibrate(50);
+
+      // 🔊 Sound effect (optional)
+      const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_1bb8e33bd2.mp3?filename=click-124467.mp3");
+      audio.volume = 0.2;
+      audio.play();
+    });
   </script>
 </body>
 </html>
