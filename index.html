@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Tap Game</title>
+  <title>TapSwap Clone</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       background-color: #111;
@@ -28,10 +29,19 @@
       margin-top: 40px;
       font-size: 24px;
     }
-    .loading {
-      font-size: 18px;
-      color: #aaa;
+    .loading, #tap-effect {
+      font-size: 22px;
       margin-top: 15px;
+      color: #ccc;
+      display: none;
+    }
+    #leaderboard {
+      margin-top: 30px;
+      font-size: 18px;
+      text-align: left;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
   </style>
 </head>
@@ -39,20 +49,50 @@
   <h1>💰 Tap to Earn!</h1>
   <div class="coin-counter">Coins: <span id="coins">0</span></div>
   <button class="tap-btn" onclick="tap()">🖐️ TAP</button>
-  <div class="loading" id="status"></div>
+  <div id="tap-effect">💥 Boom!</div>
+  <button onclick="showLeaderboard()">🏆 View Leaderboard</button>
+  <ul id="leaderboard"></ul>
 
   <script>
+    const tg = window.Telegram.WebApp;
+    const user = tg.initDataUnsafe.user;
+    const user_id = user.id;
+    const username = user.username || user.first_name || "anon";
     let coins = 0;
+
     function tap() {
-      document.getElementById("status").innerText = "⏳ Processing...";
+      document.getElementById("tap-effect").style.display = "block";
       setTimeout(() => {
+        document.getElementById("tap-effect").style.display = "none";
         coins++;
         document.getElementById("coins").innerText = coins;
-        document.getElementById("status").innerText = "💥 Boom!";
-        setTimeout(() => {
-          document.getElementById("status").innerText = "";
-        }, 700);
-      }, 400);
+        saveCoins(user_id, username, coins);
+        if (coins === 10) giveReferralBonus(user_id);
+      }, 500);
+    }
+
+    function saveCoins(userId, name, coinCount) {
+      fetch(`https://your-firebase-app.firebaseio.com/users/${userId}.json`, {
+        method: "PUT",
+        body: JSON.stringify({ coins: coinCount, username: name })
+      });
+    }
+
+    function giveReferralBonus(userId) {
+      fetch(`https://your-backend-api.com/give-referral-bonus?user_id=${userId}`);
+    }
+
+    function showLeaderboard() {
+      fetch("https://your-backend-api.com/leaderboard")
+        .then(res => res.json())
+        .then(data => {
+          let list = "<h3>🏆 Top Tappers</h3><ul>";
+          data.forEach((user, i) => {
+            list += `<li>#${i + 1} - ${user.username}: ${user.coins} 💰</li>`;
+          });
+          list += "</ul>";
+          document.getElementById("leaderboard").innerHTML = list;
+        });
     }
   </script>
 </body>
