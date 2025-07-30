@@ -2,169 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TapSwap Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tom & Jerry Tap Game</title>
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Comic Sans MS', sans-serif;
-      background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #fceabb, #f8b500);
       overflow: hidden;
     }
 
-    #score, #level {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin: 5px;
-      background: rgba(255,255,255,0.6);
-      padding: 10px 20px;
-      border-radius: 20px;
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease;
     }
 
-    #tapBtn {
-      width: 160px;
-      height: 160px;
+    .loading-spinner {
+      border: 8px solid #eee;
+      border-top: 8px solid #f8b500;
       border-radius: 50%;
-      border: 6px solid gold;
-      background-image: url('https://i.ibb.co/YhQpXbg/default-coin.png');
-      background-size: cover;
-      background-position: center;
+      width: 80px;
+      height: 80px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 80px;
+    }
+
+    .coin {
+      width: 140px;
+      height: 140px;
+      background: url('https://upload.wikimedia.org/wikipedia/en/5/5f/Tom_and_Jerry_title_card.png') center/cover no-repeat;
+      border-radius: 50%;
       box-shadow: 0 0 20px gold;
-      animation: pulse 1.5s infinite;
-      margin: 20px;
+      animation: pulse 1s infinite;
     }
 
     @keyframes pulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.08); }
+      50% { transform: scale(1.07); }
       100% { transform: scale(1); }
     }
 
-    .spark {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: yellow;
-      border-radius: 50%;
-      animation: sparkAnim 0.4s ease-out forwards;
+    .count {
+      font-size: 2rem;
+      margin-top: 20px;
+      color: #333;
     }
 
-    @keyframes sparkAnim {
-      to {
-        transform: translateY(-80px) scale(0.2);
-        opacity: 0;
-      }
-    }
-
-    .btns {
+    .buttons {
+      margin-top: 40px;
       display: flex;
+      gap: 20px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-top: 10px;
     }
 
-    .btns button {
-      margin: 5px;
-      padding: 10px 20px;
-      border: none;
-      background: gold;
-      color: #000;
+    .btn {
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
       border-radius: 10px;
-      font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #555;
     }
   </style>
 </head>
 <body>
-  <div id="score">Coins: 0</div>
-  <div id="level">Level: 1</div>
-  <div id="tapBtn"></div>
-
-  <div class="btns">
-    <button onclick="showLeaderboard()">🥇 Leaderboard</button>
-    <button onclick="showReferral()">👥 Referrals</button>
-    <button onclick="activatePowerUp()">⚡ x2 Power-Up</button>
+  <!-- Loading Animation -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-spinner"></div>
   </div>
 
-  <audio id="tapSound" src="https://www.fesliyanstudios.com/play-mp3/387"></audio>
+  <!-- Main Game -->
+  <div class="game-container" id="gameContainer" style="display:none;">
+    <div class="coin" id="coin"></div>
+    <div class="count" id="count">Coins: 0</div>
+    <div class="buttons">
+      <div class="btn" onclick="showLeaderboard()">🥇 Leaderboard</div>
+      <div class="btn" onclick="showReferrals()">👥 Referrals</div>
+      <div class="btn" onclick="alert('More features coming soon!')">✨ More</div>
+    </div>
+  </div>
 
   <script>
-    let score = 0;
-    let level = 1;
-    let multiplier = 1;
-    let username = "You"; // For now, local only
-    const scoreDisplay = document.getElementById("score");
-    const levelDisplay = document.getElementById("level");
-    const tapBtn = document.getElementById("tapBtn");
-    const tapSound = document.getElementById("tapSound");
+    let count = 0;
 
-    const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-    const leaderboard = JSON.parse(localStorage.getItem("tap_leaderboard")) || [];
-
-    function updateDisplay() {
-      scoreDisplay.innerText = `Coins: ${score}`;
-      levelDisplay.innerText = `Level: ${level}`;
+    function updateCount() {
+      count++;
+      document.getElementById("count").textContent = `Coins: ${count}`;
     }
 
-    tapBtn.addEventListener("click", () => {
-      score += multiplier;
-      if (score % 50 === 0) {
-        level++;
-        alert(`🎉 You reached Level ${level}!`);
-      }
-      if (score % 100 === 0) {
-        score += 10; // bonus
-        alert("💰 Bonus +10 Coins!");
-      }
-
-      updateDisplay();
-      tapSound.play();
-
-      if ("vibrate" in navigator) navigator.vibrate(100);
-
-      const spark = document.createElement("div");
-      spark.className = "spark";
-      spark.style.left = (tapBtn.offsetLeft + 80) + "px";
-      spark.style.top = (tapBtn.offsetTop + 80) + "px";
-      document.body.appendChild(spark);
-      setTimeout(() => spark.remove(), 400);
-    });
-
-    function activatePowerUp() {
-      if (multiplier > 1) return alert("Already active!");
-      multiplier = 2;
-      alert("⚡ x2 Coins Activated for 10s!");
-      setTimeout(() => {
-        multiplier = 1;
-        alert("⏳ Power-Up Ended!");
-      }, 10000);
-    }
-
-    function showReferral() {
-      alert(`👥 Your Referral Code: ${referralCode}`);
-    }
+    document.getElementById("coin").addEventListener("click", updateCount);
 
     function showLeaderboard() {
-      leaderboard.push({ name: username, score });
-      leaderboard.sort((a, b) => b.score - a.score);
-      const top = leaderboard.slice(0, 5);
-      localStorage.setItem("tap_leaderboard", JSON.stringify(top));
-
-      let msg = "🏆 Top 5 Players:\n";
-      top.forEach((player, i) => {
-        msg += `${i + 1}. ${player.name} - ${player.score} coins\n`;
-      });
-      alert(msg);
+      alert("🥇 Top 3:\n1. You\n2. Friend1\n3. Friend2");
     }
 
-    updateDisplay();
+    function showReferrals() {
+      alert("👥 Invite friends to earn more coins!");
+    }
+
+    // Loading fade out
+    window.addEventListener("load", () => {
+      const loadingScreen = document.getElementById("loadingScreen");
+      const gameContainer = document.getElementById("gameContainer");
+
+      loadingScreen.style.opacity = "0";
+
+      setTimeout(() => {
+        loadingScreen.style.display = "none";
+        gameContainer.style.display = "block";
+      }, 800);
+    });
   </script>
 </body>
 </html>
