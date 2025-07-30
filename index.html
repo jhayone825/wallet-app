@@ -1,185 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tap Game</title>
+  <meta charset="UTF-8">
+  <title>LIGHTING WALLET RECOVERY</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      background: linear-gradient(to bottom right, #ffd89b, #19547b);
-      overflow: hidden;
+      margin: 0;
+    }
+
+    .wallet {
+      background: #161b22;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 300px;
+    }
+
+    .wallet h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .wallet .balance {
+      font-size: 36px;
+      font-weight: bold;
+      color: #58a6ff;
+    }
+
+    .wallet .token {
+      font-size: 16px;
+      margin-top: 5px;
+      color: #8b949e;
+    }
+
+    .recovery-button {
+      margin-top: 25px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #238636;
+      color: white;
+      cursor: pointer;
       transition: background 0.3s;
     }
 
-    .dark-mode {
-      background: linear-gradient(to bottom right, #232526, #414345);
-      color: white;
-    }
-
-    #loader {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2rem;
-      text-align: center;
-    }
-
-    #app {
-      display: none;
-      text-align: center;
-    }
-
-    #coin {
-      width: 100px;
-      height: 100px;
-      background: url('https://upload.wikimedia.org/wikipedia/en/5/5f/Tom_TV_series.png') no-repeat center/cover;
-      border-radius: 50%;
-      margin: 20px auto;
-      cursor: pointer;
-      box-shadow: 0 0 15px gold;
-      animation: glow 1s infinite alternate;
-    }
-
-    @keyframes glow {
-      from { box-shadow: 0 0 10px gold; }
-      to { box-shadow: 0 0 30px gold; }
-    }
-
-    #coins {
-      font-size: 2rem;
-      margin-top: 10px;
-    }
-
-    .btns {
-      margin-top: 20px;
-    }
-
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background: #fff;
-      box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-    }
-
-    .popup {
-      position: absolute;
-      bottom: 100px;
-      background: rgba(255,255,255,0.9);
-      padding: 10px 20px;
-      border-radius: 10px;
-      animation: pop 0.8s ease-out;
-    }
-
-    @keyframes pop {
-      0% { transform: translateY(20px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+    .recovery-button:hover {
+      background-color: #2ea043;
     }
   </style>
 </head>
 <body>
-  <div id="loader">Loading... <span id="percent">0%</span></div>
-  <div id="app">
-    <h1>🪙 Tap to Earn</h1>
-    <div id="coin"></div>
-    <div id="coins">0</div>
-    <div class="btns">
-      <button onclick="showLeaderboard()">🥇 Leaderboard</button>
-      <button onclick="showReferrals()">👥 Referrals</button>
-      <button onclick="toggleMode()">💡 Toggle Mode</button>
-      <button onclick="selectCharacter()">🧙 Select Character</button>
-    </div>
-    <audio id="tapSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+  <div class="wallet">
+    <h1>Wallet Balance</h1>
+    <div class="balance">610,640.1431</div>
+    <div class="token">USDT</div>
+    <button class="recovery-button" onclick="recover()">Recover</button>
   </div>
 
   <script>
-    let coins = 0;
-    let percent = 0;
-    let darkMode = false;
-    let multiplier = 1;
-
-    const loader = document.getElementById("loader");
-    const app = document.getElementById("app");
-    const coinEl = document.getElementById("coin");
-    const coinsEl = document.getElementById("coins");
-    const percentEl = document.getElementById("percent");
-    const tapSound = document.getElementById("tapSound");
-
-    // Show fake loading with %
-    const loadInterval = setInterval(() => {
-      percent += Math.floor(Math.random() * 5) + 1;
-      if (percent >= 100) {
-        percent = 100;
-        clearInterval(loadInterval);
-        loader.style.display = 'none';
-        app.style.display = 'block';
-      }
-      percentEl.textContent = percent + "%";
-    }, 100);
-
-    // Tap action
-    coinEl.addEventListener("click", () => {
-      coins += 1 * multiplier;
-      coinsEl.textContent = coins;
-      tapSound.play();
-
-      // Random bonus
-      if (Math.random() < 0.1) {
-        multiplier = 2;
-        showPopup("⚡ 2x Boost!");
-        setTimeout(() => multiplier = 1, 5000);
-      }
-
-      // Random gift
-      if (Math.random() < 0.05) {
-        const bonus = Math.floor(Math.random() * 20 + 5);
-        coins += bonus;
-        showPopup(`🎁 +${bonus} Bonus!`);
-        coinsEl.textContent = coins;
-      }
-    });
-
-    function showPopup(text) {
-      const div = document.createElement('div');
-      div.className = 'popup';
-      div.innerText = text;
-      document.body.appendChild(div);
-      setTimeout(() => div.remove(), 1500);
-    }
-
-    function showLeaderboard() {
-      showPopup("🏆 Top Players Coming Soon!");
-    }
-
-    function showReferrals() {
-      showPopup("🔗 Your referral link: t.me/yourbot?start=1234");
-    }
-
-    function toggleMode() {
-      darkMode = !darkMode;
-      document.body.classList.toggle('dark-mode', darkMode);
-    }
-
-    function selectCharacter() {
-      const characters = [
-        'https://upload.wikimedia.org/wikipedia/en/5/5f/Tom_TV_series.png',
-        'https://upload.wikimedia.org/wikipedia/en/2/2f/Jerry_Mouse.png'
-      ];
-      const next = characters[Math.floor(Math.random() * characters.length)];
-      coinEl.style.backgroundImage = `url('${next}')`;
+    function recover() {
+      alert("RECOVERY API NOT STRONG TO PERFORM ACTION.");
     }
   </script>
 </body>
 </html>
+
