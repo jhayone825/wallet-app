@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tom & Jerry Tap Game</title>
+  <title>TapSwap Game</title>
   <style>
     body {
       margin: 0;
@@ -17,11 +17,10 @@
       overflow: hidden;
     }
 
-    #score {
-      font-size: 2rem;
+    #score, #level {
+      font-size: 1.5rem;
       font-weight: bold;
-      margin-bottom: 10px;
-      color: #333;
+      margin: 5px;
       background: rgba(255,255,255,0.6);
       padding: 10px 20px;
       border-radius: 20px;
@@ -32,11 +31,12 @@
       height: 160px;
       border-radius: 50%;
       border: 6px solid gold;
-      background-image: url('https://i.ibb.co/QKfK94W/tom-and-jerry-coin.jpg'); /* Temporary Tom & Jerry image */
+      background-image: url('https://i.ibb.co/QKfK94W/tom-and-jerry-coin.jpg');
       background-size: cover;
       background-position: center;
       box-shadow: 0 0 20px gold;
       animation: pulse 1.5s infinite;
+      margin: 20px;
     }
 
     @keyframes pulse {
@@ -62,7 +62,10 @@
     }
 
     .btns {
-      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
     }
 
     .btns button {
@@ -80,31 +83,47 @@
 </head>
 <body>
   <div id="score">Coins: 0</div>
+  <div id="level">Level: 1</div>
   <div id="tapBtn"></div>
 
   <div class="btns">
-    <button onclick="alert('Leaderboard Coming Soon!')">🥇 Leaderboard</button>
-    <button onclick="alert('Referral System Coming Soon!')">👥 Referrals</button>
+    <button onclick="alert('Leaderboard coming soon')">🥇 Leaderboard</button>
+    <button onclick="alert('Referrals coming soon')">👥 Referrals</button>
+    <button onclick="activatePowerUp()">⚡ x2 Power-Up</button>
   </div>
 
   <audio id="tapSound" src="https://www.fesliyanstudios.com/play-mp3/387"></audio>
 
   <script>
     let score = 0;
+    let level = 1;
+    let multiplier = 1;
     const scoreDisplay = document.getElementById("score");
+    const levelDisplay = document.getElementById("level");
     const tapBtn = document.getElementById("tapBtn");
     const tapSound = document.getElementById("tapSound");
 
+    function updateDisplay() {
+      scoreDisplay.innerText = `Coins: ${score}`;
+      levelDisplay.innerText = `Level: ${level}`;
+    }
+
     tapBtn.addEventListener("click", () => {
-      score++;
-      scoreDisplay.innerText = "Coins: " + score;
+      score += multiplier;
+      if (score % 50 === 0) {
+        level++;
+        alert(`🎉 You reached Level ${level}!`);
+      }
+      if (score % 100 === 0) {
+        score += 10; // bonus
+        alert("💰 Bonus +10 Coins!");
+      }
 
-      // sound + vibration
+      updateDisplay();
       tapSound.play();
-      if ("vibrate" in navigator) navigator.vibrate(100);
 
-      // bonus
-      if (score % 50 === 0) alert("🎉 Bonus! +10 Coins");
+      // Vibration
+      if ("vibrate" in navigator) navigator.vibrate(100);
 
       // spark effect
       const spark = document.createElement("div");
@@ -114,6 +133,17 @@
       document.body.appendChild(spark);
       setTimeout(() => spark.remove(), 400);
     });
+
+    function activatePowerUp() {
+      if (multiplier > 1) return alert("Already active!");
+      multiplier = 2;
+      alert("⚡ x2 Coins Activated for 10s!");
+      setTimeout(() => {
+        multiplier = 1;
+        alert("⏳ Power-Up Ended!");
+      }, 10000);
+    }
   </script>
 </body>
 </html>
+
