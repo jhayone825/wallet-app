@@ -11,45 +11,77 @@
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
-      background: linear-gradient(145deg, #111, #1a1a1a);
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(270deg, #1a1a1a, #0d0d0d);
+      background-size: 400% 400%;
+      animation: backgroundFlow 15s ease infinite;
       color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 20px;
-      height: 100vh;
-      overflow: hidden;
     }
+
+    @keyframes backgroundFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     h1 {
-      margin-bottom: 10px;
       font-size: 2em;
+      margin-top: 20px;
     }
+
     #coin-display {
-      font-size: 1.5em;
-      margin-bottom: 20px;
+      font-size: 1.4em;
+      margin: 10px 0 20px;
+      color: #ffcc00;
     }
+
     #tap-button {
       background-color: gold;
-      color: #000;
-      padding: 25px 45px;
-      font-size: 1.2em;
+      color: black;
+      padding: 25px 50px;
+      font-size: 1.3em;
       border: none;
       border-radius: 30px;
       cursor: pointer;
-      transition: transform 0.1s;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      transition: transform 0.15s ease, box-shadow 0.2s;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+      position: relative;
+      z-index: 1;
     }
+
     #tap-button:active {
       transform: scale(0.95);
     }
+
+    .coin-pop {
+      position: absolute;
+      color: gold;
+      font-size: 18px;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-80px); }
+    }
+
     .menu {
-      margin-top: 30px;
+      margin-top: 25px;
       display: flex;
       gap: 15px;
       flex-wrap: wrap;
       justify-content: center;
     }
+
     .menu button {
       background: #333;
       color: white;
@@ -58,10 +90,13 @@
       border-radius: 20px;
       cursor: pointer;
       font-size: 0.9em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
+
     .menu button:hover {
       background: #444;
     }
+
     #leaderboard-box {
       margin-top: 20px;
       max-height: 200px;
@@ -71,6 +106,7 @@
       padding: 10px;
       border-radius: 10px;
     }
+
     .leaderboard-entry {
       display: flex;
       justify-content: space-between;
@@ -99,10 +135,11 @@
     const coinDisplay = document.getElementById("coin-display");
     const tapButton = document.getElementById("tap-button");
 
-    tapButton.addEventListener("click", () => {
+    tapButton.addEventListener("click", (e) => {
       coins += 1;
       coinDisplay.textContent = "Coins: " + coins;
       saveCoins();
+      showCoinPop(e);
     });
 
     function saveCoins() {
@@ -141,7 +178,16 @@
         });
     }
 
-    // Load saved coins (optional: future feature)
+    function showCoinPop(e) {
+      const coin = document.createElement("div");
+      coin.className = "coin-pop";
+      coin.textContent = "+1";
+      document.body.appendChild(coin);
+      const rect = tapButton.getBoundingClientRect();
+      coin.style.left = rect.left + rect.width / 2 + "px";
+      coin.style.top = rect.top - 10 + "px";
+      setTimeout(() => coin.remove(), 1000);
+    }
   </script>
 </body>
 </html>
