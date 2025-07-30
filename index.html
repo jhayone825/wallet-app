@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tom & Jerry Tap Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tap Game</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: sans-serif;
+      font-family: 'Arial', sans-serif;
     }
 
     body {
@@ -17,6 +17,7 @@
       overflow: hidden;
     }
 
+    /* Loading screen styles */
     .loading-screen {
       position: fixed;
       top: 0;
@@ -24,69 +25,77 @@
       width: 100%;
       height: 100%;
       background: #fff;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: opacity 0.8s ease;
-    }
-
-    .loading-spinner {
-      border: 8px solid #eee;
-      border-top: 8px solid #f8b500;
-      border-radius: 50%;
-      width: 80px;
-      height: 80px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .game-container {
+      z-index: 9999;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 80px;
+      justify-content: center;
+    }
+
+    .progress-container {
+      width: 80%;
+      height: 20px;
+      background: #ddd;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #f8b500;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.2s;
+    }
+
+    .percentage {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .game-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
     }
 
     .coin {
-      width: 140px;
-      height: 140px;
-      background: url('https://upload.wikimedia.org/wikipedia/en/5/5f/Tom_and_Jerry_title_card.png') center/cover no-repeat;
+      width: 130px;
+      height: 130px;
+      background: url('https://cdn-icons-png.flaticon.com/512/3258/3258523.png') center/cover no-repeat;
       border-radius: 50%;
-      box-shadow: 0 0 20px gold;
-      animation: pulse 1s infinite;
+      margin-bottom: 30px;
+      animation: pulse 1.5s infinite;
     }
 
     @keyframes pulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.07); }
+      50% { transform: scale(1.1); }
       100% { transform: scale(1); }
     }
 
     .count {
       font-size: 2rem;
-      margin-top: 20px;
       color: #333;
     }
 
     .buttons {
       margin-top: 40px;
       display: flex;
-      gap: 20px;
       flex-wrap: wrap;
       justify-content: center;
+      gap: 15px;
     }
 
     .btn {
       background: #333;
       color: #fff;
-      padding: 12px 24px;
-      border-radius: 10px;
+      padding: 10px 22px;
+      border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
       transition: background 0.3s;
@@ -98,19 +107,24 @@
   </style>
 </head>
 <body>
-  <!-- Loading Animation -->
+
+  <!-- Loading Screen -->
   <div class="loading-screen" id="loadingScreen">
-    <div class="loading-spinner"></div>
+    <h2>Loading...</h2>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="percentage" id="percentage">0%</div>
   </div>
 
-  <!-- Main Game -->
-  <div class="game-container" id="gameContainer" style="display:none;">
+  <!-- Game Content -->
+  <div class="game-container" id="gameContainer">
     <div class="coin" id="coin"></div>
     <div class="count" id="count">Coins: 0</div>
     <div class="buttons">
       <div class="btn" onclick="showLeaderboard()">🥇 Leaderboard</div>
       <div class="btn" onclick="showReferrals()">👥 Referrals</div>
-      <div class="btn" onclick="alert('More features coming soon!')">✨ More</div>
+      <div class="btn" onclick="alert('🎉 More exciting features coming!')">✨ More</div>
     </div>
   </div>
 
@@ -125,26 +139,36 @@
     document.getElementById("coin").addEventListener("click", updateCount);
 
     function showLeaderboard() {
-      alert("🥇 Top 3:\n1. You\n2. Friend1\n3. Friend2");
+      alert("🥇 Leaderboard:\n1. You - 950\n2. Alex - 780\n3. Leo - 690");
     }
 
     function showReferrals() {
-      alert("👥 Invite friends to earn more coins!");
+      alert("👥 Invite friends & earn rewards!");
     }
 
-    // Loading fade out
-    window.addEventListener("load", () => {
-      const loadingScreen = document.getElementById("loadingScreen");
-      const gameContainer = document.getElementById("gameContainer");
+    // Simulate loading with percentage
+    let progress = 0;
+    const progressBar = document.getElementById("progressBar");
+    const percentage = document.getElementById("percentage");
+    const loadingScreen = document.getElementById("loadingScreen");
+    const gameContainer = document.getElementById("gameContainer");
 
-      loadingScreen.style.opacity = "0";
+    const loadingInterval = setInterval(() => {
+      progress += Math.floor(Math.random() * 5) + 1;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(loadingInterval);
 
-      setTimeout(() => {
-        loadingScreen.style.display = "none";
-        gameContainer.style.display = "block";
-      }, 800);
-    });
+        // Delay showing game after short fade
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+          gameContainer.style.display = "flex";
+        }, 500);
+      }
+
+      progressBar.style.width = `${progress}%`;
+      percentage.textContent = `${progress}%`;
+    }, 100);
   </script>
 </body>
 </html>
-
