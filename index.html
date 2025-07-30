@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TapSwap Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tom & Jerry Tap Game</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #1e1e2f, #111);
-      color: #fff;
-      text-align: center;
+      font-family: 'Comic Sans MS', sans-serif;
+      background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -19,152 +16,103 @@
       height: 100vh;
       overflow: hidden;
     }
-    
-    #coin-display {
-      font-size: 3rem;
-      margin-top: 20px;
-    }
 
-    #tap-btn {
-      background: gold;
-      border: none;
-      border-radius: 50%;
-      width: 160px;
-      height: 160px;
+    #score {
       font-size: 2rem;
       font-weight: bold;
-      box-shadow: 0 0 20px gold;
-      margin-top: 40px;
-      animation: pulse 2s infinite;
+      margin-bottom: 10px;
+      color: #333;
+      background: rgba(255,255,255,0.6);
+      padding: 10px 20px;
+      border-radius: 20px;
     }
 
-    #tap-btn:active {
-      transform: scale(0.95);
+    #tapBtn {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 6px solid gold;
+      background-image: url('https://i.ibb.co/QKfK94W/tom-and-jerry-coin.jpg'); /* Temporary Tom & Jerry image */
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 0 20px gold;
+      animation: pulse 1.5s infinite;
     }
 
     @keyframes pulse {
-      0% { box-shadow: 0 0 5px gold; }
-      50% { box-shadow: 0 0 30px gold; }
-      100% { box-shadow: 0 0 5px gold; }
-    }
-
-    #power-up-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      border: none;
-      background: #f39c12;
-      color: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #f39c12;
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
     }
 
     .spark {
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: 20px;
+      height: 20px;
       background: yellow;
       border-radius: 50%;
-      opacity: 0.8;
-      animation: fly 0.6s ease-out forwards;
+      animation: sparkAnim 0.4s ease-out forwards;
     }
 
-    @keyframes fly {
+    @keyframes sparkAnim {
       to {
-        transform: translate(var(--x), var(--y));
+        transform: translateY(-80px) scale(0.2);
         opacity: 0;
       }
     }
 
-    #leaderboard-btn, #referral-btn {
-      margin: 10px;
-      padding: 8px 16px;
-      font-size: 1rem;
-      background: #2980b9;
-      color: #fff;
+    .btns {
+      margin-top: 20px;
+    }
+
+    .btns button {
+      margin: 5px;
+      padding: 10px 20px;
       border: none;
-      border-radius: 6px;
+      background: gold;
+      color: #000;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body>
-  <h1>🔥 TapSwap Game</h1>
-  <div id="coin-display">0</div>
-  <button id="tap-btn">TAP</button>
-  <button id="power-up-btn">⚡ Power Boost</button>
-  <br>
-  <button id="leaderboard-btn">🥇 Leaderboard</button>
-  <button id="referral-btn">👥 Referrals</button>
+  <div id="score">Coins: 0</div>
+  <div id="tapBtn"></div>
+
+  <div class="btns">
+    <button onclick="alert('Leaderboard Coming Soon!')">🥇 Leaderboard</button>
+    <button onclick="alert('Referral System Coming Soon!')">👥 Referrals</button>
+  </div>
+
+  <audio id="tapSound" src="https://www.fesliyanstudios.com/play-mp3/387"></audio>
 
   <script>
-    let coinCount = 0;
-    let baseCoinsPerTap = 1;
-    let powerUpActive = false;
+    let score = 0;
+    const scoreDisplay = document.getElementById("score");
+    const tapBtn = document.getElementById("tapBtn");
+    const tapSound = document.getElementById("tapSound");
 
-    const coinDisplay = document.getElementById("coin-display");
-    const tapBtn = document.getElementById("tap-btn");
+    tapBtn.addEventListener("click", () => {
+      score++;
+      scoreDisplay.innerText = "Coins: " + score;
 
-    function animateCounter(element, newValue) {
-      const current = parseInt(element.innerText);
-      const increment = newValue > current ? 1 : -1;
-      const interval = setInterval(() => {
-        const updated = parseInt(element.innerText) + increment;
-        element.innerText = updated;
-        if (updated === newValue) clearInterval(interval);
-      }, 20);
-    }
-
-    function spawnSparks(x, y) {
-      for (let i = 0; i < 10; i++) {
-        const spark = document.createElement("div");
-        spark.className = "spark";
-        spark.style.left = x + "px";
-        spark.style.top = y + "px";
-        spark.style.setProperty("--x", `${Math.random() * 200 - 100}px`);
-        spark.style.setProperty("--y", `${Math.random() * 200 - 100}px`);
-        document.body.appendChild(spark);
-        setTimeout(() => spark.remove(), 600);
-      }
-    }
-
-    tapBtn.addEventListener("click", (e) => {
-      coinCount += baseCoinsPerTap;
-      animateCounter(coinDisplay, coinCount);
-
-      spawnSparks(e.clientX, e.clientY);
-      window.navigator.vibrate(50);
-      const tapSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_52d2e6df5b.mp3");
+      // sound + vibration
       tapSound.play();
+      if ("vibrate" in navigator) navigator.vibrate(100);
 
-      if (coinCount % 50 === 0) {
-        alert("🎉 Bonus! +10 Coins");
-        coinCount += 10;
-        animateCounter(coinDisplay, coinCount);
-      }
-    });
+      // bonus
+      if (score % 50 === 0) alert("🎉 Bonus! +10 Coins");
 
-    document.getElementById("power-up-btn").addEventListener("click", () => {
-      if (powerUpActive) return;
-      powerUpActive = true;
-      baseCoinsPerTap = 2;
-      const btn = document.getElementById("power-up-btn");
-      btn.innerText = "🔥 Boost Active!";
-      btn.disabled = true;
-
-      setTimeout(() => {
-        powerUpActive = false;
-        baseCoinsPerTap = 1;
-        btn.innerText = "⚡ Power Boost";
-        btn.disabled = false;
-      }, 30000);
-    });
-
-    document.getElementById("leaderboard-btn").addEventListener("click", () => {
-      alert("🏆 Leaderboard coming soon!");
-    });
-
-    document.getElementById("referral-btn").addEventListener("click", () => {
-      alert("👥 Share your referral link!");
+      // spark effect
+      const spark = document.createElement("div");
+      spark.className = "spark";
+      spark.style.left = (tapBtn.offsetLeft + 80) + "px";
+      spark.style.top = (tapBtn.offsetTop + 80) + "px";
+      document.body.appendChild(spark);
+      setTimeout(() => spark.remove(), 400);
     });
   </script>
 </body>
