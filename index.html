@@ -1,99 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TapSwap Clone</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>TapSwap Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      background-color: #111;
+      background: linear-gradient(145deg, #111, #1a1a1a);
       color: white;
-      font-family: sans-serif;
-      text-align: center;
-      padding-top: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      height: 100vh;
+      overflow: hidden;
     }
     h1 {
-      font-size: 30px;
+      margin-bottom: 10px;
+      font-size: 2em;
     }
-    .tap-btn {
-      background-color: #FFD700;
+    #coin-display {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    #tap-button {
+      background-color: gold;
+      color: #000;
+      padding: 25px 45px;
+      font-size: 1.2em;
       border: none;
-      border-radius: 100px;
-      font-size: 28px;
-      padding: 30px 60px;
+      border-radius: 30px;
       cursor: pointer;
-      box-shadow: 0 0 15px #FFD700;
+      transition: transform 0.1s;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    #tap-button:active {
+      transform: scale(0.95);
+    }
+    .menu {
       margin-top: 30px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    .coin-counter {
-      margin-top: 40px;
-      font-size: 24px;
+    .menu button {
+      background: #333;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
     }
-    .loading, #tap-effect {
-      font-size: 22px;
-      margin-top: 15px;
-      color: #ccc;
-      display: none;
+    .menu button:hover {
+      background: #444;
     }
-    #leaderboard {
-      margin-top: 30px;
-      font-size: 18px;
-      text-align: left;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
+    #leaderboard-box {
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      width: 100%;
+      background: #222;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .leaderboard-entry {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #444;
+      padding: 5px 0;
     }
   </style>
 </head>
 <body>
-  <h1>💰 Tap to Earn!</h1>
-  <div class="coin-counter">Coins: <span id="coins">0</span></div>
-  <button class="tap-btn" onclick="tap()">🖐️ TAP</button>
-  <div id="tap-effect">💥 Boom!</div>
-  <button onclick="showLeaderboard()">🏆 View Leaderboard</button>
-  <ul id="leaderboard"></ul>
+  <h1>💰 TapSwap Game</h1>
+  <div id="coin-display">Coins: 0</div>
+  <button id="tap-button">TAP</button>
+
+  <div class="menu">
+    <button onclick="showLeaderboard()">🥇 Leaderboard</button>
+    <button onclick="claimReferral()">👥 Referrals</button>
+  </div>
+
+  <div id="leaderboard-box" style="display: none;"></div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    const user = tg.initDataUnsafe.user;
-    const user_id = user.id;
-    const username = user.username || user.first_name || "anon";
     let coins = 0;
+    const user_id = "user_" + Math.floor(Math.random() * 100000);
+    const username = "Player" + user_id.slice(-4);
 
-    function tap() {
-      document.getElementById("tap-effect").style.display = "block";
-      setTimeout(() => {
-        document.getElementById("tap-effect").style.display = "none";
-        coins++;
-        document.getElementById("coins").innerText = coins;
-        saveCoins(user_id, username, coins);
-        if (coins === 10) giveReferralBonus(user_id);
-      }, 500);
-    }
+    const coinDisplay = document.getElementById("coin-display");
+    const tapButton = document.getElementById("tap-button");
 
-    function saveCoins(userId, name, coinCount) {
-      fetch(`https://your-firebase-app.firebaseio.com/users/${userId}.json`, {
-        method: "PUT",
-        body: JSON.stringify({ coins: coinCount, username: name })
+    tapButton.addEventListener("click", () => {
+      coins += 1;
+      coinDisplay.textContent = "Coins: " + coins;
+      saveCoins();
+    });
+
+    function saveCoins() {
+      fetch("http://localhost:3000/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id, username, coins })
       });
     }
 
-    function giveReferralBonus(userId) {
-      fetch(`https://your-backend-api.com/give-referral-bonus?user_id=${userId}`);
-    }
-
     function showLeaderboard() {
-      fetch("https://your-backend-api.com/leaderboard")
+      fetch("http://localhost:3000/leaderboard")
         .then(res => res.json())
         .then(data => {
-          let list = "<h3>🏆 Top Tappers</h3><ul>";
-          data.forEach((user, i) => {
-            list += `<li>#${i + 1} - ${user.username}: ${user.coins} 💰</li>`;
+          const box = document.getElementById("leaderboard-box");
+          box.innerHTML = "<h3>Top Players</h3>";
+          data.forEach((entry, i) => {
+            box.innerHTML += `
+              <div class="leaderboard-entry">
+                <span>${i + 1}. ${entry.username}</span>
+                <span>${entry.coins} 🪙</span>
+              </div>`;
           });
-          list += "</ul>";
-          document.getElementById("leaderboard").innerHTML = list;
+          box.style.display = "block";
         });
     }
+
+    function claimReferral() {
+      fetch(`http://localhost:3000/referral?user_id=${user_id}`)
+        .then(res => res.json())
+        .then(() => {
+          coins += 10;
+          coinDisplay.textContent = "Coins: " + coins;
+          saveCoins();
+          alert("🎉 You received 10 coins from a referral!");
+        });
+    }
+
+    // Load saved coins (optional: future feature)
   </script>
 </body>
 </html>
