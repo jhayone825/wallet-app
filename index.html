@@ -1,76 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>LIGHTING WALLET RECOVERY</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aviator-Style Crash Game</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0d1117;
-      color: #c9d1d9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+    :root{
+      --bg:#0f1220; --panel:#171a2b; --muted:#60678a; --text:#e7ebff; --accent:#7c5cff; --danger:#ff4d6d; --success:#2dd4bf;
     }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji"; background:radial-gradient(1200px 600px at 70% -10%, #1b1f36 0%, #0f1220 60%); color:var(--text)}
+    .wrap{max-width:1100px; margin:24px auto; padding:0 16px}
+    header{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px}
+    .title{font-weight:800; letter-spacing:.3px; font-size:clamp(20px,3vw,28px)}
+    .balance{background:var(--panel); padding:12px 16px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.25); display:flex; align-items:center; gap:10px}
+    .balance strong{font-size:18px}
+    .grid{display:grid; grid-template-columns: 1.1fr .9fr; gap:16px}
+    @media (max-width: 920px){ .grid{grid-template-columns:1fr;}}
 
-    .wallet {
-      background: #161b22;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      text-align: center;
-      width: 300px;
-    }
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.00)); border:1px solid rgba(255,255,255,.06); border-radius:20px; padding:16px; box-shadow:0 20px 40px rgba(0,0,0,.28)}
 
-    .wallet h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
+    /* Arena */
+    .arena{position:relative; height:420px; overflow:hidden}
+    .sky{position:absolute; inset:0; background: radial-gradient(800px 300px at 10% 10%, rgba(124,92,255,.15), transparent 60%), radial-gradient(700px 300px at 90% 0%, rgba(45,212,191,.1), transparent 60%)}
+    .gridlines{position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px); background-size: 40px 40px}
+    .ground{position:absolute; left:-10%; right:-10%; bottom:-120px; height:220px; background: radial-gradient(60% 80% at 50% 20%, rgba(255,255,255,.06), rgba(0,0,0,0) 70%), linear-gradient( to bottom, #0d111f 0%, #090c18 100%); border-top:1px solid rgba(255,255,255,.08); filter: blur(4px)}
 
-    .wallet .balance {
-      font-size: 36px;
-      font-weight: bold;
-      color: #58a6ff;
-    }
+    .plane{position:absolute; font-size:28px; transform: translate(-50%, -50%) rotate(12deg); transition: filter .15s}
+    .trail{position:absolute; width:2px; background:linear-gradient(to bottom, rgba(124,92,255,.9), rgba(124,92,255,0)); box-shadow:0 0 16px rgba(124,92,255,.8)}
+    .boom{position:absolute; font-size:34px; transform: translate(-50%, -50%); filter: drop-shadow(0 6px 14px rgba(0,0,0,.5))}
 
-    .wallet .token {
-      font-size: 16px;
-      margin-top: 5px;
-      color: #8b949e;
-    }
+    .hud{position:absolute; top:14px; left:14px; display:flex; flex-wrap:wrap; gap:10px}
+    .badge{background:rgba(12,14,28,.6); border:1px solid rgba(255,255,255,.08); padding:8px 10px; border-radius:12px; font-weight:700}
+    .badge.m{font-size:22px}
+    .badge.good{color:var(--success); border-color:rgba(45,212,191,.5)}
+    .badge.bad{color:var(--danger); border-color:rgba(255,77,109,.5)}
 
-    .recovery-button {
-      margin-top: 25px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #238636;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+    /* Controls */
+    .controls{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width:560px){ .controls{grid-template-columns:1fr} }
+    label{font-size:12px; color:var(--muted)}
+    input[type="number"], input[type="text"]{width:100%; padding:12px 14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); color:var(--text); border-radius:12px; outline:none}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:12px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.08); cursor:pointer; background:linear-gradient(180deg, rgba(124,92,255,.16), rgba(124,92,255,.06)); color:var(--text); font-weight:800; letter-spacing:.3px; box-shadow:0 12px 24px rgba(124,92,255,.12); transition: transform .04s ease, filter .15s}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background:linear-gradient(180deg, rgba(124,92,255,.38), rgba(124,92,255,.16));}
+    .btn.danger{background:linear-gradient(180deg, rgba(255,77,109,.36), rgba(255,77,109,.12));}
+    .btn:disabled{opacity:.6; cursor:not-allowed; filter:grayscale(.4)}
 
-    .recovery-button:hover {
-      background-color: #2ea043;
-    }
+    .history{display:flex; flex-wrap:wrap; gap:8px}
+    .chip{padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08)}
+    .chip.good{color:var(--success); border-color:rgba(45,212,191,.4)}
+    .chip.bad{color:var(--danger); border-color:rgba(255,77,109,.4)}
+
+    .note{color:var(--muted); font-size:12px}
   </style>
 </head>
 <body>
-  <div class="wallet">
-    <h1>Wallet Balance</h1>
-    <div class="balance">610,640.1431</div>
-    <div class="token">USDT</div>
-    <button class="recovery-button" onclick="recover()">Recover</button>
+  <div class="wrap">
+    <header>
+      <div class="title">✈️ Aviator‑Style Crash</div>
+      <div class="balance" id="balanceBox">
+        <span>Balance:</span> <strong id="balance">1000.00</strong>
+        <span>💳</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Arena / Multiplier -->
+      <section class="card arena">
+        <div class="sky"></div>
+        <div class="gridlines"></div>
+        <div class="hud">
+          <div class="badge">Round <span id="round">1</span></div>
+          <div class="badge m" id="multiplier">1.00×</div>
+          <div class="badge" id="status">Place your bet</div>
+        </div>
+        <div id="plane" class="plane" style="left: 40px; bottom: 40px;">🛩️</div>
+        <div id="trail" class="trail" style="left: 40px; bottom: 40px; height: 0px; opacity:.9"></div>
+        <div id="boom" class="boom" style="display:none">💥</div>
+        <div class="ground"></div>
+      </section>
+
+      <!-- Controls -->
+      <section class="card">
+        <div class="controls">
+          <div>
+            <label for="bet">Bet Amount</label>
+            <input id="bet" type="number" min="1" step="1" value="50" />
+          </div>
+          <div>
+            <label for="autoCash">Auto Cash Out (×, optional)</label>
+            <input id="autoCash" type="number" min="1.01" step="0.01" placeholder="e.g. 2.00" />
+          </div>
+          <div class="row">
+            <button id="startBtn" class="btn primary">Start Round</button>
+            <button id="cashBtn" class="btn danger" disabled>Cash Out</button>
+          </div>
+          <div class="row">
+            <div>
+              <label for="seed">Seed (optional, reproducible)</label>
+              <input id="seed" type="text" placeholder="any text" />
+            </div>
+            <div>
+              <label for="edge">House Edge % (demo)</label>
+              <input id="edge" type="number" min="0" max="5" step="0.1" value="1" />
+            </div>
+          </div>
+        </div>
+        <div style="height:14px"></div>
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+            <strong>Previous Crashes</strong>
+            <span class="note">Click a chip to copy</span>
+          </div>
+          <div class="history" id="history"></div>
+        </div>
+      </section>
+    </div>
+
+    <p class="note" style="margin-top:16px">
+      This is a demo. Mathematics: crash point ~ heavy‑tailed (1/(1−r)) with optional house edge; growth m(t)=e^{speed·t}. Cash out before crash to win.
+    </p>
   </div>
 
   <script>
-    function recover() {
-      alert("RECOVERY API NOT STRONG TO PERFORM ACTION.");
+    // ===== Utils: seeded PRNG (Mulberry32) for reproducibility =====
+    function xmur3(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i), 3432918353); h=h<<13 | h>>>19; } return function(){ h=Math.imul(h^ (h>>>16), 2246822507); h=Math.imul(h^ (h>>>13), 3266489909); return (h^ (h>>>16))>>>0; } }
+    function mulberry32(a){ return function(){ let t=a+=0x6D2B79F5; t=Math.imul(t^(t>>>15), t|1); t^=t+Math.imul(t^(t>>>7), t|61); return ((t^(t>>>14))>>>0)/4294967296; } }
+
+    function makeRNG(seedText){ if(!seedText) return Math.random; const seedFn = xmur3(seedText); const rng = mulberry32(seedFn()); return rng; }
+
+    // ===== Game State =====
+    let rng = Math.random;
+    let balance = 1000;
+    let round = 1;
+
+    const els = {
+      balance: document.getElementById('balance'),
+      round: document.getElementById('round'),
+      multiplier: document.getElementById('multiplier'),
+      status: document.getElementById('status'),
+      plane: document.getElementById('plane'),
+      trail: document.getElementById('trail'),
+      boom: document.getElementById('boom'),
+      history: document.getElementById('history'),
+      bet: document.getElementById('bet'),
+      autoCash: document.getElementById('autoCash'),
+      start: document.getElementById('startBtn'),
+      cash: document.getElementById('cashBtn'),
+      seed: document.getElementById('seed'),
+      edge: document.getElementById('edge'),
+    };
+
+    function fmt(n){ return Number(n).toFixed(2); }
+    function fmtMult(m){ return m.toFixed(2) + '×'; }
+
+    // Crash distribution (demo): m = (1 / (1 - r)) * (1 - edge)
+    function drawCrashPoint(){
+      const edgePct = Math.max(0, Math.min(5, parseFloat(els.edge.value||'0')));
+      const edge = 1 - (edgePct/100); // multiply by this
+      const r = rng();
+      let m = 1 / (1 - Math.max(1e-12, r));
+      m = Math.max(1.01, m * edge);
+      // soft cap for visuals (you can hit above, but we'll clamp display path length)
+      return m;
     }
+
+    // ===== Animation & Round Logic =====
+    let inRound = false, crashed=false, cashed=false;
+    let betAmount = 0; let startTime=0; let crashPoint=2; let cashOutAt=null; let rafId=null;
+    const speed = 0.65; // higher = faster growth of multiplier (m(t)=e^{speed*t})
+
+    function setStatus(text, cls){
+      els.status.textContent = text;
+      els.status.classList.remove('good','bad');
+      if(cls) els.status.classList.add(cls);
+    }
+
+    function resetArena(){
+      els.plane.style.display='block';
+      els.boom.style.display='none';
+      els.plane.style.filter='drop-shadow(0 10px 18px rgba(124,92,255,.6))';
+      els.trail.style.height='0px';
+      els.plane.style.left='40px';
+      els.plane.style.bottom='40px';
+      els.trail.style.left='40px';
+      els.trail.style.bottom='40px';
+    }
+
+    function pushHistory(val){
+      const chip = document.createElement('button');
+      chip.className = 'chip ' + (val >= 2 ? 'good':'bad');
+      chip.textContent = val.toFixed(2) + '×';
+      chip.title = 'Click to copy ' + chip.textContent;
+      chip.onclick = () => {
+        navigator.clipboard?.writeText(val.toFixed(2))
+      };
+      els.history.prepend(chip);
+      // keep last 24
+      while(els.history.children.length>24){ els.history.removeChild(els.history.lastChild); }
+    }
+
+    function startRound(){
+      if(inRound) return;
+      betAmount = Math.max(1, Math.floor(parseFloat(els.bet.value || '0')));
+      if(betAmount>balance){ setStatus('Insufficient balance', 'bad'); return; }
+
+      // set RNG from seed (if provided)
+      rng = makeRNG(els.seed.value.trim());
+
+      balance -= betAmount; els.balance.textContent = fmt(balance);
+      crashPoint = drawCrashPoint();
+      cashed=false; crashed=false; cashOutAt=null; inRound=true; startTime=performance.now();
+      els.multiplier.textContent = '1.00×';
+      setStatus('Flying… tap Cash Out any time');
+      els.start.disabled = true; els.cash.disabled = false; els.bet.disabled = true; els.autoCash.disabled = true; els.seed.disabled = true; els.edge.disabled = true;
+      resetArena();
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function cashOut(){
+      if(!inRound || crashed || cashed) return;
+      cashed = true; cashOutAt = currentMultiplier;
+      const win = betAmount * cashOutAt;
+      balance += win; els.balance.textContent = fmt(balance);
+      setStatus('Cashed at ' + fmtMult(cashOutAt) + ' +' + fmt(win), 'good');
+      els.cash.disabled = true;
+    }
+
+    let currentMultiplier = 1;
+
+    function tick(now){
+      if(!inRound){ cancelAnimationFrame(rafId); return; }
+      const t = (now - startTime) / 1000; // seconds
+      currentMultiplier = Math.max(1.0, Math.exp(speed * t));
+      els.multiplier.textContent = fmtMult(currentMultiplier);
+
+      // plane path (curved up-right)
+      const arena = document.querySelector('.arena');
+      const w = arena.clientWidth, h = arena.clientHeight;
+      const maxPath = Math.min(1, Math.log10(Math.max(1.01, currentMultiplier))/3); // 0..1 scale for path length
+      const x = 40 + maxPath * (w - 80);
+      const y = 40 + Math.pow(maxPath, 1.2) * (h - 140);
+      els.plane.style.left = x + 'px';
+      els.plane.style.bottom = y + 'px';
+      els.trail.style.left = x + 'px';
+      els.trail.style.bottom = y + 'px';
+      els.trail.style.height = Math.max(0, y-40) + 'px';
+
+      // auto cashout
+      const auto = parseFloat(els.autoCash.value || '0');
+      if(!isNaN(auto) && auto>=1.01 && !cashed && currentMultiplier>=auto){ cashOut(); }
+
+      // crash check
+      if(currentMultiplier >= crashPoint){
+        crashed = true; inRound=false; pushHistory(crashPoint);
+        els.plane.style.display='none';
+        els.boom.style.display='block';
+        els.boom.style.left = x + 'px';
+        els.boom.style.bottom = y + 'px';
+        els.multiplier.textContent = fmtMult(crashPoint);
+
+        if(!cashed){ setStatus('Crash at ' + fmtMult(crashPoint) + ' −' + fmt(betAmount), 'bad'); }
+        else{ setStatus('Crash at ' + fmtMult(crashPoint) + ' (you got out at ' + fmtMult(cashOutAt) + ')', 'good'); }
+
+        // reset controls after short pause
+        setTimeout(()=>{
+          round++; els.round.textContent = String(round);
+          els.start.disabled = false; els.cash.disabled = true; els.bet.disabled = false; els.autoCash.disabled = false; els.seed.disabled = false; els.edge.disabled = false;
+          els.plane.style.display='block'; els.boom.style.display='none';
+        }, 1200);
+        cancelAnimationFrame(rafId); return;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    // ===== Wire up UI =====
+    els.start.addEventListener('click', startRound);
+    els.cash.addEventListener('click', cashOut);
+
+    // Enter key starts, Space cashes out
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter'){ startRound(); }
+      if(e.code==='Space'){ e.preventDefault(); cashOut(); }
+    });
+
+    // Initialize
+    els.balance.textContent = fmt(balance);
+    setStatus('Place your bet');
   </script>
 </body>
 </html>
+
 
