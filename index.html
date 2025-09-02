@@ -1,76 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>LIGHTING WALLET RECOVERY</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0d1117;
-      color: #c9d1d9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .wallet {
-      background: #161b22;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      text-align: center;
-      width: 300px;
-    }
-
-    .wallet h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .wallet .balance {
-      font-size: 36px;
-      font-weight: bold;
-      color: #58a6ff;
-    }
-
-    .wallet .token {
-      font-size: 16px;
-      margin-top: 5px;
-      color: #8b949e;
-    }
-
-    .recovery-button {
-      margin-top: 25px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #238636;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .recovery-button:hover {
-      background-color: #2ea043;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Car Purchase Form</title>
 </head>
 <body>
-  <div class="wallet">
-    <h1>Wallet Balance</h1>
-    <div class="balance">610,640.1431</div>
-    <div class="token">USDT</div>
-    <button class="recovery-button" onclick="recover()">Recover</button>
-  </div>
+  <h2>Buy a Car</h2>
+  <form action="/api/send-email" method="POST">
+    <label>Name:</label><br>
+    <input type="text" name="name" required><br><br>
 
-  <script>
-    function recover() {
-      alert("RECOVERY API NOT STRONG TO PERFORM ACTION.");
-    }
-  </script>
+    <label>Email:</label><br>
+    <input type="email" name="email" required><br><br>
+
+    <label>Car Model:</label><br>
+    <input type="text" name="car_model" required><br><br>
+
+    <label>Message:</label><br>
+    <textarea name="message" required></textarea><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
 </body>
 </html>
-
