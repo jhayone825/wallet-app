@@ -2,75 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>LIGHTING WALLET RECOVERY</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Inquiry Form - Ohio Truck Sales</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0d1117;
-      color: #c9d1d9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
     }
-
-    .wallet {
-      background: #161b22;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    .form-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
       text-align: center;
-      width: 300px;
+      color: #333;
     }
-
-    .wallet h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .wallet .balance {
-      font-size: 36px;
+    label {
+      display: block;
+      margin: 10px 0 5px;
       font-weight: bold;
-      color: #58a6ff;
     }
-
-    .wallet .token {
-      font-size: 16px;
-      margin-top: 5px;
-      color: #8b949e;
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
-
-    .recovery-button {
-      margin-top: 25px;
-      padding: 10px 20px;
-      font-size: 16px;
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: #fff;
       border: none;
-      border-radius: 8px;
-      background-color: #238636;
-      color: white;
+      border-radius: 5px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s;
     }
-
-    .recovery-button:hover {
-      background-color: #2ea043;
+    button:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
-  <div class="wallet">
-    <h1>Wallet Balance</h1>
-    <div class="balance">610,640.1431</div>
-    <div class="token">USDT</div>
-    <button class="recovery-button" onclick="recover()">Recover</button>
-  </div>
+  <div class="form-container">
+    <h2>Car Purchase Inquiry</h2>
+    <form action="send_email.php" method="POST">
+      <label for="name">Full Name</label>
+      <input type="text" name="name" required>
 
-  <script>
-    function recover() {
-      alert("RECOVERY API NOT STRONG TO PERFORM ACTION.");
-    }
-  </script>
+      <label for="email">Email Address</label>
+      <input type="email" name="email" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="text" name="phone" required>
+
+      <label for="car">Car Interested In</label>
+      <input type="text" name="car" placeholder="e.g., 2019 Ford F-150" required>
+
+      <label for="message">Message</label>
+      <textarea name="message" rows="4" placeholder="Additional details or questions"></textarea>
+
+      <button type="submit">Submit Inquiry</button>
+    </form>
+  </div>
 </body>
 </html>
-
